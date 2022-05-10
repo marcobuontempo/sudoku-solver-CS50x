@@ -75,37 +75,11 @@ function check_valid_number (row, column, board, number_to_check) {
 }
 
 
-// Check whether a board is solved. Cycles through each row, and then column, to ensure all numbers 1-9 are used only once.
+// Check whether a board is solved. It does not validate the solution, just checks whether all cells have been filled.
 function check_solved(board) {
     for(let i=0; i<BOARD_SIZE; i++) {
-        const values_required = b.map(number => number)
-
-        for(let n=0; n<BOARD_SIZE; n++) {
-            let value_used = false
-            for(let j=0; j<BOARD_SIZE; j++) {
-                if(board[i][j] == values_required[n]) {
-                    value_used = true
-                }
-            }
-            if(!value_used) {
-                return false
-            }
-        }
-    }
-
-    for(let i=0; i<BOARD_SIZE; i++) {
-        const values_required = b.map(number => number)
-
-        for(let n=0; n<BOARD_SIZE; n++) {
-            let value_used = false
-            for(let j=0; j<BOARD_SIZE; j++) {
-                if(board[j][i] == values_required[n]) {
-                    value_used = true
-                }
-            }
-            if(!value_used) {
-                return false
-            }
+        for(let j=0; j<BOARD_SIZE; j++) {
+            if(isNaN(board[i][j])) { return false }
         }
     }
     return true
