@@ -1,0 +1,72 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0px !important;
+    padding: 0px !important;
+    box-sizing: border-box !important;
+    background-color: antiquewhite;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+}
+
+h1 {
+    margin: 0;
+}
+
+#input-table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: whitesmoke;
+}
+
+td {
+    width: 3em;
+    height: 3em;
+    padding: 0.2em;
+}
+
+input {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 0.5em;
+    text-align: center;
+    font-size: 2em;
+}
+
+td:first-child {
+    border-left: 4px solid;
+}
+td:nth-child(3n) {
+    border-right: 4px solid ;
+}
+tr:first-child {
+    border-top: 4px solid;
+}
+tr:nth-child(3n) td {
+    border-bottom: 4px solid ;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+button {
+    font-size: 1.5em;
+}
+
+#message {
+    font-size: 1.5em;
+    font-weight: bold;
+}

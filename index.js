@@ -1,39 +1,16 @@
-const b = "b" //blank tile
+/* 
+ * NOTES:
+ * Rows/Columns are 0 indexed.
+ * Boards are represented as multidimensional arrays. board[row][column].
+ * EXAMPLE: board[2][4] = cell in 3rd row, 5th column
+*/
 
-const default_board = [ [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, b, b, b, b, b] ]
 
-const test_board_b =  [ [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                        [7, 8, 9, 1, 2, 3, 4, 5, 6],
-                        [4, 5, 6, 7, 8, 9, 1, 2, 3],
-                        [3, 1, 2, 8, 4, 5, 9, 6, 7],
-                        [6, 9, 7, 3, 1, 2, 8, 4, 5],
-                        [8, 4, 5, 6, 9, 7, 3, 1, 2],
-                        [2, 3, 1, 5, 7, 4, 6, 9, 8],
-                        [9, 6, 8, 2, 3, 1, 5, 7, 4],
-                        [5, 7, 4, 9, 6, 8, 2, 3, 1] ]
+// Blank (Unknown) Cells
+const b = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
 
-const test_board =    [ [b, b, 5, b, b, b, b, b, b],
-                        [b, b, b, b, b, 4, b, 7, b],
-                        [3, 6, b, 1, b, b, 8, b, b],
-                        [b, b, 2, 9, b, b, b, b, b],
-                        [9, 5, b, b, 7, b, b, 8, b],
-                        [b, b, 1, b, b, b, 5, b, b],
-                        [2, b, b, b, b, b, b, b, b],
-                        [b, b, b, b, 1, b, b, b, 3],
-                        [8, 9, b, 3, b, b, 6, b, b] ]
-
-const default_numbers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
-
+// Board width and height
 const BOARD_SIZE = 9
-
 
 
 // Returns start row# of a 3x3 box
@@ -45,7 +22,6 @@ function get_3x3_row (row) {
 function get_3x3_column (column) {
     return Math.floor(column/3) * 3
 }
-
 
 // Check whether number is already in a given row
 function check_row_valid_number (row, column, board, number_to_check) {
@@ -88,6 +64,7 @@ function check_3x3_valid_number (row, column, board, number_to_check) {
     return true
 }
 
+// Check whether a number is valid (i.e. not in row, column or 3x3)
 function check_valid_number (row, column, board, number_to_check) {
     if(check_row_valid_number(row, column, board, number_to_check) &&
     check_column_valid_number(row, column, board, number_to_check) &&
@@ -98,10 +75,10 @@ function check_valid_number (row, column, board, number_to_check) {
 }
 
 
+// Check whether a board is solved. Cycles through each row, and then column, to ensure all numbers 1-9 are used only once.
 function check_solved(board) {
-
     for(let i=0; i<BOARD_SIZE; i++) {
-        const values_required = default_numbers.map(number => number)
+        const values_required = b.map(number => number)
 
         for(let n=0; n<BOARD_SIZE; n++) {
             let value_used = false
@@ -117,7 +94,7 @@ function check_solved(board) {
     }
 
     for(let i=0; i<BOARD_SIZE; i++) {
-        const values_required = default_numbers.map(number => number)
+        const values_required = b.map(number => number)
 
         for(let n=0; n<BOARD_SIZE; n++) {
             let value_used = false
@@ -131,78 +108,122 @@ function check_solved(board) {
             }
         }
     }
-    
     return true
 }
 
 
+// Solve board by brute force (.. try a number, backtrack if board is invalid, repeat until solved)
 function brute_solve(board) {
+
     let empty_found = false
-    let tile_updated = false
 
     for(let i=0; i<BOARD_SIZE; i++) {
         for(let j=0; j<BOARD_SIZE; j++) {
 
-            for(let n=0; n<BOARD_SIZE; n++) {
+            if(isNaN(board[i][j])) {
 
-                if(isNaN(board[i][j])) {
-                    empty_found = true
+                empty_found = true
 
-                    const number_checking = default_numbers[n]
-
+                for(let n=0; n<BOARD_SIZE; n++) {
+                    const number_checking = b[n]
                     if(check_valid_number(i,j,board,number_checking)) {
-                        console.log("updating board [",i," ",j,"] with ", number_checking)
                         board[i][j] = number_checking
-                        updated_tile = true
-                        if(brute_solve(board) == false) {
-                            updated_tile = false
-                            continue
+                        if(brute_solve(board)) {
+                            return board
                         } else {
-                            return true
+                            board[i][j] = b
+                            continue
                         }
                     }
                 }
-
-
-
+                return false
             }
         }
-    }
-
-    if(empty_found && !tile_updated) {
-        print_board(board)
-        return false
     }
 
     if(!empty_found) {
         if(check_solved(board)) {
-            print_board(board)
+            return board
+        } else {
+            return false
         }
     }
+
+}
+
+// Solves board and records the execution time
+function solve(board) {
+    const start_time = performance.now()    
+    
+    board = brute_solve(board)
+        
+    const end_time = performance.now()
+
+    const total_execution = Math.round((end_time - start_time)*100) / 100
+
+    return [board, total_execution]
 }
 
 
-function print_board(board) {
-    let print = ["|=======|=======|=======|\n"]
+// Import Board from user's input on webpage
+function import_board() {
+    const board = [ [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b],
+                    [b, b, b, b, b, b, b, b, b] ]
+
 
     for(let i=0; i<BOARD_SIZE; i++) {
-        if(i%3===0 && i!==0) {
-            print.push("|-------|-------|-------|\n")
-        }
-        const row = []
         for(let j=0; j<BOARD_SIZE; j++) {
-            if(j%3===0) {
-                row.push("| ")
+            const input = document.querySelector(`[data-row="${i}"][data-column="${j}"]`)
+            const value = Number(input.value)
+
+            if(value>=1 && value<=9) {
+                if(check_valid_number(i,j,board,value)) {
+                    board[i][j] = value
+                    input.style.color = "black"
+                } else {
+                    document.querySelector("#message").innerHTML = "Invalid Input"
+                    input.style.color = "red"
+                    return false
+                }
+            } else {
+                input.style.color = "blue"
             }
-            row.push(board[i][j])
-            row.push(" ")
         }
-        row.push("|\n")
-        print.push(row.join(""))
     }
-    print.push("|=======|=======|=======|")
-    print = print.join("")
-    console.log(print)
+
+    return board
 }
 
-brute_solve(test_board)
+// Display the solution on webpage once solved
+function display_solution(solution) {
+    const board = solution[0]
+    const total_execution = solution[1]
+
+    for(let i=0; i<BOARD_SIZE; i++) {
+        for(let j=0; j<BOARD_SIZE; j++) {
+            const input = document.querySelector(`[data-row="${i}"][data-column="${j}"]`)
+            if(input.value == "") {
+                input.value = board[i][j]
+            }
+        }
+    }
+    
+    document.querySelector("#message").innerHTML = `Time to solve: <span style="font-style: italic;">${total_execution} ms</span`
+}
+
+// Event handler for webpage's "Solve!" button
+function handle_solve_button() {
+    let board = import_board()
+
+    if(board) {
+        const solution = solve(board)
+        display_solution(solution)
+    }
+}
