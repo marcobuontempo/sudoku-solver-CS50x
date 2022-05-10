@@ -177,19 +177,23 @@ function import_board() {
 
 // Display the solution on webpage once solved
 function display_solution(solution) {
-    const board = solution[0]
-    const total_execution = solution[1]
-
-    for(let i=0; i<BOARD_SIZE; i++) {
-        for(let j=0; j<BOARD_SIZE; j++) {
-            const input = document.querySelector(`[data-row="${i}"][data-column="${j}"]`)
-            if(input.value == "") {
-                input.value = board[i][j]
+    try {
+        const board = solution[0]
+        const total_execution = solution[1]
+    
+        for(let i=0; i<BOARD_SIZE; i++) {
+            for(let j=0; j<BOARD_SIZE; j++) {
+                const input = document.querySelector(`[data-row="${i}"][data-column="${j}"]`)
+                if(input.value == "") {
+                    input.value = board[i][j]
+                }
             }
         }
+        
+        document.querySelector("#message").innerHTML = `Time to solve: <span style="font-style: italic;">${total_execution} ms</span`
+    } catch {
+        document.querySelector("#message").innerHTML = `Unsolveable puzzle. Please adjust input.`
     }
-    
-    document.querySelector("#message").innerHTML = `Time to solve: <span style="font-style: italic;">${total_execution} ms</span`
 }
 
 // Event handler for webpage's "Solve!" button
